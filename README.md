@@ -34,7 +34,7 @@ caw play --help                           # 全部参数
 | `-h, --help` | — | 显示帮助 |
 | `-V, --version` | — | 显示版本 |
 
-> **CLI 参数永远覆盖 [`config.toml`](#配置)。**
+> **CLI 参数覆盖 [`config.toml`](#配置)。**
 >
 > 配置路径默认 `~/.config/wordcast/`，可通过环境变量 `XDG_CONFIG_HOME` 改写。
 
@@ -51,22 +51,21 @@ caw play --help                           # 全部参数
 
 ### 默认 `config.toml`
 
-每个字段都自带注释，编辑即生效。CLI 同名参数会覆盖这里的值。
+CLI 参数将覆盖配置的值，默认配置如下
 
 ```toml
 # wordcast configuration
-# CLI 参数永远覆盖此处的值
 
 [playback]
 # 阅读顺序：cn-first（先中文）| fl-first（先外语）
 mode = "fl-first"
-# 每个词重复朗读次数
+# 每组词重复朗读次数
 repeat = 1
-# 阅读速度（每分钟词数）
+# 阅读速度（毫秒）
 rate = 160
-# 词对之间停顿（毫秒）；同对内中↔外取一半
+# 词对之间停顿（毫秒）
 pause_ms = 800
-# 读完所有词后是否循环（Ctrl+C 退出）
+# 是否循环播放
 cycle = false
 
 [voice]
@@ -78,7 +77,7 @@ english = "Samantha"
 japanese = "Kyoko"
 # 中文 key 朗读音色
 chinese = "Tingting"
-# 兜底音色（未匹配 Hangul / Kana / ASCII 时使用，如纯汉字 value）
+# 默认音色
 default = "Samantha"
 ```
 
