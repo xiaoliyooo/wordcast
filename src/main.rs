@@ -46,6 +46,10 @@ enum Command {
         /// Cycle the source forever (Ctrl+C to stop)
         #[arg(short = 'c', long)]
         cycle: bool,
+
+        /// Play words in reverse order
+        #[arg(long)]
+        reverse: bool,
     },
 }
 
@@ -70,7 +74,17 @@ fn main() -> Result<()> {
             rate,
             pause_ms,
             cycle,
-        } => cmd_play(&outcome.config, &name, repeat, mode, rate, pause_ms, cycle),
+            reverse,
+        } => cmd_play(
+            &outcome.config,
+            &name,
+            repeat,
+            mode,
+            rate,
+            pause_ms,
+            cycle,
+            reverse,
+        ),
     }
 }
 
@@ -93,6 +107,7 @@ fn cmd_list() -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn cmd_play(
     cfg: &config::Config,
     name: &str,
@@ -101,18 +116,23 @@ fn cmd_play(
     rate: Option<u32>,
     pause_ms: Option<u64>,
     cycle: bool,
+    reverse: bool,
 ) -> Result<()> {
     let mode = mode.unwrap_or(cfg.playback.mode);
     let repeat = repeat.unwrap_or(cfg.playback.repeat);
     let rate = rate.unwrap_or(cfg.playback.rate);
     let pause_ms = pause_ms.unwrap_or(cfg.playback.pause_ms);
     let cycle = cycle || cfg.playback.cycle;
+    let reverse = reverse || cfg.playback.reverse;
 
     let src = source::load(name)?;
-    let words = src.words;
+    let mut words: Vec<(usize, (String, String))> = src.words.into_iter().enumerate().collect();
+    if reverse {
+        words.reverse();
+    }
 
     println!(
-        "Playing {} ({} words) — mode: {:?}, repeat: {}, rate: {} wpm, pause: {}ms, cycle: {}",
+        "Playing {} ({} words) — mode: {:?}, repeat: {}, rate: {} wpm, pause: {}ms, cycle: {}, reverse: {}",
         name,
         words.len(),
         mode,
@@ -120,6 +140,7 @@ fn cmd_play(
         rate,
         pause_ms,
         cycle,
+        reverse,
     );
 
     let opts = player::PlaybackOptions {

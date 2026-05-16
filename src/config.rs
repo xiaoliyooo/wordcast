@@ -20,6 +20,7 @@ pub struct PlaybackConfig {
     pub rate: u32,
     pub pause_ms: u64,
     pub cycle: bool,
+    pub reverse: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ValueEnum)]
@@ -60,6 +61,7 @@ impl Default for PlaybackConfig {
             rate: 160,
             pause_ms: 800,
             cycle: false,
+            reverse: false,
         }
     }
 }
@@ -146,6 +148,8 @@ rate = 160
 pause_ms = 800
 # 读完所有词后是否循环（Ctrl+C 退出）
 cycle = false
+# 是否倒序阅读词表
+reverse = false
 
 [voice]
 # 韩语朗读音色（`say -v ?` 查看系统可用音色）
@@ -194,6 +198,7 @@ mod tests {
         assert_eq!(cfg.playback.rate, 160);
         assert_eq!(cfg.playback.pause_ms, 800);
         assert!(!cfg.playback.cycle);
+        assert!(!cfg.playback.reverse);
         assert_eq!(cfg.voice.korean, "Yuna");
         assert_eq!(cfg.voice.default, "Samantha");
         assert!(cfg.terminal.tab_title);
@@ -216,6 +221,7 @@ tab_title = false
 [playback]
 mode = "cn-first"
 rate = 220
+reverse = true
 "#;
         let cfg: Config = toml::from_str(raw).unwrap();
         assert_eq!(cfg.playback.mode, Mode::CnFirst);
@@ -223,6 +229,7 @@ rate = 220
         assert_eq!(cfg.playback.repeat, 1);
         assert_eq!(cfg.playback.pause_ms, 800);
         assert!(!cfg.playback.cycle);
+        assert!(cfg.playback.reverse);
         assert_eq!(cfg.voice.korean, "Yuna");
         assert_eq!(cfg.voice.chinese, "Tingting");
     }

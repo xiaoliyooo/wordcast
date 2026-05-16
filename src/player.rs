@@ -17,7 +17,7 @@ pub struct PlaybackOptions {
     pub tab_title: bool,
 }
 
-pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
+pub fn play(words: &[(usize, (String, String))], opts: &PlaybackOptions) -> Result<()> {
     let total = words.len();
     let inter_step_pause = Duration::from_millis(opts.pause_ms / 2);
     let inter_word_pause = Duration::from_millis(opts.pause_ms);
@@ -30,12 +30,12 @@ pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
         if opts.cycle && cycle_num > 1 {
             println!("\n↻ Cycle {cycle_num} (Ctrl+C to stop)");
         }
-        for (idx, (cn, foreign)) in words.iter().enumerate() {
+        for (orig_idx, (cn, foreign)) in words.iter() {
             let voice_foreign = LangHint::detect(foreign).voice_for(&opts.voices);
 
             println!(
                 "[{}/{total}] {cn}  ⇄  {foreign}  ({voice_foreign})",
-                idx + 1
+                orig_idx + 1
             );
 
             if update_tab {

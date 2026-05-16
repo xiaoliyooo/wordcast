@@ -1,16 +1,17 @@
 # wordcast
 
-> macOS 双语词汇朗读 CLI —— 从 JSON 词表逐对朗读中文 key 与外语 value，回到上学晨读的时光。
+> macOS 双语朗读 CLI：JSON 词表逐对朗读，晨读节奏，工作背景音。
 
 **仅支持 macOS**（系统可用音色：`say -v '?'`）。二进制 `caw`，包名 `wordcast`。
 
 ## 功能特性
 
 - **双语朗读**：JSON 词表逐对朗读中文 key + 外语 value，支持 `fl-first`（先外语）/ `cn-first`（先中文）两种顺序
-- **多语种音色**：按 Unicode 块自动在 韩 / 日 / 英 / 兜底 间切换，中文 key 用独立音色，五个音色全部可在 `config.toml` 配置
-- **Terminal Tab 同步**：朗读时把当前外语词写入 tab 标题（当前仅Kitty支持，需在 kitty.conf 打开远程控制 `allow_remote_control yes`）
-- **节奏可调**：速率（WPM）、重复次数、词对停顿、循环播放，CLI 与 `config.toml` 双轨控制（CLI 优先）
+- **多语种音色**：自动识别词汇语言选择对应音色
+- **Terminal Tab 同步**：朗读时 tab 标题展示当前词汇方便工作中随时查看（当前仅支持Kitty，在 kitty.conf 打开远程控制 `allow_remote_control yes`）
+- **节奏可调**：速率、重复次数、词对停顿、循环播放、倒序阅读等
 - **零依赖**：底层走 macOS 自带 `say`（如 `say -v Yuna -r 160 안녕하세요`），不联网、不下模型、单一静态二进制
+- 可配置
 
 ## Install
 
@@ -37,6 +38,7 @@ caw play --help                           # 全部参数
 | `--rate <WPM>` | `160` | 朗读速度（每分钟词数） |
 | `--pause-ms <MS>` | `800` | 双语之间停顿间隔（毫秒） |
 | `-c, --cycle` | `false` | 循环播放（Ctrl+C 退出） |
+| `--reverse` | `false` | 倒序阅读词表 |
 | `-h, --help` | — | 显示帮助 |
 | `-V, --version` | — | 显示版本 |
 
@@ -73,6 +75,8 @@ rate = 160
 pause_ms = 800
 # 是否循环播放
 cycle = false
+# 是否倒序阅读词表
+reverse = false
 
 [voice]
 # 韩语朗读音色（`say -v ?` 查看系统可用音色）
