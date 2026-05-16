@@ -1,6 +1,7 @@
 mod config;
 mod player;
 mod source;
+mod terminal;
 mod voice;
 
 use anyhow::Result;
@@ -128,6 +129,7 @@ fn cmd_play(
         pause_ms,
         repeat,
         cycle,
+        tab_title: cfg.terminal.tab_title,
     };
     player::play(&words, &opts)?;
     Ok(())

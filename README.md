@@ -1,10 +1,16 @@
 # wordcast
 
-macOS 双语词汇朗读 CLI。从 JSON 词表逐对朗读中文 key 与外语 value，回到上学晨读的时光，自动按字符块选音色（韩 / 日 / 英 / 兜底）。
+> macOS 双语词汇朗读 CLI —— 从 JSON 词表逐对朗读中文 key 与外语 value，回到上学晨读的时光。
 
-底层通过 macOS 自带的 `say` 命令调用系统 TTS（形如 `say -v Yuna -r 160 안녕하세요`），因此**仅支持 macOS**，开箱即用，无需额外语音模型或网络。可用音色查询：`say -v '?'`。
+**仅支持 macOS**（系统可用音色：`say -v '?'`）。二进制 `caw`，包名 `wordcast`。
 
-二进制：`caw`，包名：`wordcast`。
+## 功能特性
+
+- **双语朗读**：JSON 词表逐对朗读中文 key + 外语 value，支持 `fl-first`（先外语）/ `cn-first`（先中文）两种顺序
+- **多语种音色**：按 Unicode 块自动在 韩 / 日 / 英 / 兜底 间切换，中文 key 用独立音色，五个音色全部可在 `config.toml` 配置
+- **Terminal Tab 同步**：朗读时把当前外语词写入 tab 标题（当前仅Kitty支持，需在 kitty.conf 打开远程控制 `allow_remote_control yes`）
+- **节奏可调**：速率（WPM）、重复次数、词对停顿、循环播放，CLI 与 `config.toml` 双轨控制（CLI 优先）
+- **零依赖**：底层走 macOS 自带 `say`（如 `say -v Yuna -r 160 안녕하세요`），不联网、不下模型、单一静态二进制
 
 ## Install
 
@@ -79,6 +85,10 @@ japanese = "Kyoko"
 chinese = "Tingting"
 # 默认音色
 default = "Samantha"
+
+[terminal]
+# 把 tab 标题设为当前外语词（仅 kitty；需 `allow_remote_control yes`）
+tab_title = true
 ```
 
 ## 词表格式

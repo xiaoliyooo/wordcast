@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 pub struct Config {
     pub playback: PlaybackConfig,
     pub voice: VoiceConfig,
+    pub terminal: TerminalConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -36,6 +37,19 @@ pub struct VoiceConfig {
     pub japanese: String,
     pub chinese: String,
     pub default: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct TerminalConfig {
+    /// 将终端 tab标题 设为当前外语词（kitty only）
+    pub tab_title: bool,
+}
+
+impl Default for TerminalConfig {
+    fn default() -> Self {
+        Self { tab_title: true }
+    }
 }
 
 impl Default for PlaybackConfig {
@@ -144,6 +158,10 @@ japanese = "Kyoko"
 chinese = "Tingting"
 # 兜底音色（未匹配 Hangul / Kana / ASCII 时使用，如纯汉字 value）
 default = "Samantha"
+
+[terminal]
+# 把终端 tab标题 设为当前外语词，目前仅支持kitty（需开启kitty远程控制 `allow_remote_control yes`）
+tab_title = true
 "#;
     fs::write(path, template).with_context(|| format!("Failed to write {}", path.display()))?;
     Ok(())
@@ -178,6 +196,18 @@ mod tests {
         assert!(!cfg.playback.cycle);
         assert_eq!(cfg.voice.korean, "Yuna");
         assert_eq!(cfg.voice.default, "Samantha");
+        assert!(cfg.terminal.tab_title);
+    }
+
+    #[test]
+    fn tab_title_can_be_disabled() {
+        let raw = r#"
+[terminal]
+tab_title = false
+"#;
+        let cfg: Config = toml::from_str(raw).unwrap();
+        assert!(!cfg.terminal.tab_title);
+        assert_eq!(cfg.playback.mode, Mode::FlFirst);
     }
 
     #[test]

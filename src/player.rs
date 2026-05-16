@@ -4,6 +4,7 @@ use std::thread;
 use std::time::Duration;
 
 use crate::config::{Mode, VoiceConfig};
+use crate::terminal;
 use crate::voice::LangHint;
 
 pub struct PlaybackOptions {
@@ -13,6 +14,7 @@ pub struct PlaybackOptions {
     pub pause_ms: u64,
     pub repeat: u32,
     pub cycle: bool,
+    pub tab_title: bool,
 }
 
 pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
@@ -20,6 +22,7 @@ pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
     let inter_step_pause = Duration::from_millis(opts.pause_ms / 2);
     let inter_word_pause = Duration::from_millis(opts.pause_ms);
     let voice_chinese = &opts.voices.chinese;
+    let update_tab = opts.tab_title && terminal::should_set_tab_title();
 
     let mut cycle_num: u64 = 0;
     loop {
@@ -34,6 +37,10 @@ pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
                 "[{}/{total}] {cn}  ⇄  {foreign}  ({voice_foreign})",
                 idx + 1
             );
+
+            if update_tab {
+                terminal::set_tab_title(foreign);
+            }
 
             for _ in 0..opts.repeat.max(1) {
                 let (first, first_voice, second, second_voice) = match opts.mode {
@@ -50,6 +57,11 @@ pub fn play(words: &[(String, String)], opts: &PlaybackOptions) -> Result<()> {
             break;
         }
     }
+
+    if update_tab {
+        terminal::clear_tab_title();
+    }
+
     Ok(())
 }
 
